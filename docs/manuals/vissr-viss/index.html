@@ -9,7 +9,7 @@
 
     <link rel="shortcut icon" href="/hierarchical_information_model/images/fav.png" type="image/x-icon" />
 
-    <title>Playground implementation :: Central Data Service Playground</title>
+    <title>VISSR (VISS data server) :: Central Data Service Playground</title>
 
     
     <link href="/cdsp/css/nucleus.css?1714144434" rel="stylesheet">
@@ -40,7 +40,7 @@
     </style>
     
   </head>
-  <body class="" data-url="/cdsp/overview/cdsp-implementation-concept/">
+  <body class="" data-url="/cdsp/manuals/vissr-viss/">
     <nav id="sidebar" class="">
 
 
@@ -86,7 +86,7 @@
   
     
     <li data-nav-id="/cdsp/overview/" title="Playground overview" class="dd-item
-        parent
+        
         
         
         ">
@@ -154,7 +154,7 @@
  
   
     
-      <li data-nav-id="/cdsp/overview/cdsp-implementation-concept/" title="Playground implementation" class="dd-item active">
+      <li data-nav-id="/cdsp/overview/cdsp-implementation-concept/" title="Playground implementation" class="dd-item ">
         <a href="/cdsp/overview/cdsp-implementation-concept/">
         Playground implementation
         
@@ -204,7 +204,7 @@
   
     
     <li data-nav-id="/cdsp/manuals/" title="Manuals" class="dd-item
-        
+        parent
         
         
         ">
@@ -251,7 +251,7 @@
  
   
     
-      <li data-nav-id="/cdsp/manuals/vissr-viss/" title="VISSR (VISS data server)" class="dd-item ">
+      <li data-nav-id="/cdsp/manuals/vissr-viss/" title="VISSR (VISS data server)" class="dd-item active">
         <a href="/cdsp/manuals/vissr-viss/">
         VISSR (VISS data server)
         
@@ -334,7 +334,7 @@
                   
                   
                   <div id="top-github-link">
-                    <a class="github-link" title='Edit this page' href="https://github.com/covesa/cdsp/edit/master/docs/docs-gen/content/overview/cdsp-implementation-concept.md" target="blank">
+                    <a class="github-link" title='Edit this page' href="https://github.com/covesa/cdsp/edit/master/docs/docs-gen/content/manuals/vissr-viss.md" target="blank">
                       <i class="fas fa-code-branch"></i>
                       <span id="top-github-link-text">Edit this page</span>
                     </a>
@@ -365,7 +365,7 @@
             
           
           
-            <a href='/cdsp/'>Central Data Service Playground</a> > <a href='/cdsp/overview/'>Playground overview</a> > Playground implementation
+            <a href='/cdsp/'>Central Data Service Playground</a> > <a href='/cdsp/manuals/'>Manuals</a> > VISSR (VISS data server)
           
         
           
@@ -380,19 +380,8 @@
     <div class="wrapper">
 <nav id="TableOfContents">
   <ul>
-    <li>
-      <ul>
-        <li><a href="#viss-data-server">VISS data server</a></li>
-        <li><a href="#highly-functional-vss-data-store">Highly functional (VSS) data store</a></li>
-      </ul>
-    </li>
-    <li><a href="#deployment">Deployment</a>
-      <ul>
-        <li></li>
-        <li><a href="#host-based-docker">Host based Docker</a></li>
-        <li><a href="#automotive-hardware">Automotive hardware</a></li>
-      </ul>
-    </li>
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#apache-iotdb-connector">Apache IoTDB connector</a></li>
   </ul>
 </nav>
     </div>
@@ -410,73 +399,18 @@
           
             <h1>
               
-              Playground implementation
+              VISSR (VISS data server)
             </h1>
           
 
         
 
 
-<p>The prior section describing the logical concept should be read to understand the concepts to be implemented.</p>
-<p>As outlined in the logical description, as a starting point the Service is realized as a basic building block combining VISS Data Server with highly functional (VSS) Data Store.</p>
-<h3 id="viss-data-server">VISS data server</h3>
-<p>The reference implementation for the COVESA VISS specification is developed in the <a href="https://github.com/COVESA/vissr">VISSR</a> project.
-The playground has included VISSR to provide its northbound VISS support.</p>
-<p>Alongside the VISS server the VISSR project provides clients, feeders and tooling. Further details can be found in the upstream <a href="https://covesa.github.io/vissr/">VISSR documentation site</a>.</p>
-<p>During initial development of the playground the upstream VISSR project supported using SQLite, Redis or memcached databases as its data store.</p>
-<h3 id="highly-functional-vss-data-store">Highly functional (VSS) data store</h3>
-<p>As explained earlier in the <a href="/cdsp/overview/cdsp-logical-concept/#components" title="data store logical description">logical concept</a> the playground includes the use of highly functional VSS data stores to expand the available data processing possibilities. Two archetypes were considered:</p>
-<ol>
-<li>Database server with timeseries capabilities</li>
-<li>Application database</li>
-</ol>
-<p>The OSS Apache IoTDB project was selected for the database server archetype for reasons explained in the <a href="#apache-iotdb">section</a> below.</p>
-<p>To enable access to VSS data stored in IoTDB using the VISS protocol the playground project extended VISSR to support IoTDB as one of its supported data store backends. That support was upstreamed and merged.</p>
-<p>For the application database archetype MongoDB Realm was selected. Support for it is currently a work in progress as part of the playground project backlog.</p>
-<h4 id="apache-iotdb">Apache IoTDB</h4>
-<p>The Apache IoTDB <a href="https://iotdb.apache.org/">project page</a> describes IoTDB as:</p>
-<p><em>&ldquo;Apache IoTDB (Database for Internet of Things) is an IoT native database with high performance for data management and analysis, deployable on the edge and the cloud. Due to its light-weight architecture, high performance and rich feature set together with its deep integration with Apache Hadoop, Spark and Flink, Apache IoTDB can meet the requirements of massive data storage, high-speed data ingestion and complex data analysis in the IoT industrial fields.&rdquo;</em></p>
-<p>The diagram below summarizes some of the features that make it an attractive addition to the playground.</p>
-<figure><img src="/cdsp/Apache-IoTDB-feature-summary.drawio.svg" width="50pc"><figcaption>
-      <h4>Summary of Apache IoTDB features</h4>
-    </figcaption>
-</figure>
-
-<ul>
-<li>
-<p>The focus on timeseries IoT data delivering high throughput, with low latency are a good fit with the automotive domain. The availability of a single node (Edge) server build is critical for in-vehicle investigations and is supported by the existence of a cluster build for the cloud if needed.</p>
-</li>
-<li>
-<p>Its support for client server, event and streaming data architectures allows for flexible operation using a single solution.</p>
-</li>
-<li>
-<p>It also has very wide API support that greatly enhances the pluggability of the data store into other components, whilst supporting the playground project goal of loose coupling.</p>
-</li>
-<li>
-<p>Similarly the wide range of integrations into other tools and frameworks, particularly the Apache big data stack, simplifies the integration of VSS and associated data into data-centric workflows.</p>
-</li>
-<li>
-<p>IoTDB has a wide range of built-in timeseries data processing and analysis functions covering topics such as data quality, profiling, repair, anomaly detection and series discovery. For example, in-vehicle data analysis can be performed to derive some information or knowledge and then data reduced for further processing in the cloud.</p>
-</li>
-<li>
-<p>As well as Native APIs IoTDB also supports a SQL-like query language. This supports the describing of work in logical terms that affords some portability to other solutions.</p>
-</li>
-</ul>
-<h2 id="deployment">Deployment</h2>
-<p>The project is currently targeting two deployment scenarios:</p>
-<ol>
-<li>Easy to develop: make it easy to build, modify and trial by providing a containerized instance running on a host using <a href="https://www.docker.com/">Docker containers</a>.</li>
-<li>Closer to production: the same base code should be deployable to systems closer to production, including on automotive hardware (or its simulation), e.g. <a href="https://www.yoctoproject.org/">Yocto</a>, container orchestration, <a href="https://en.wikipedia.org/wiki/Service-oriented_architecture">Service-orientated architecture (SOA)</a> etc.</li>
-</ol>
-<p>Docker containers are chosen to facilitate the rapid integration and/or swapping of technology options. Be it internals of the playground itself, or connection to other components. For example, users can easily integrate the playground into their own <a href="https://docs.docker.com/compose/">docker compose</a> containing other components.</p>
-<h4 id="status">Status</h4>
-<p>The containerized docker deployment is available. Deployment on automotive hardware is currently not but is part of the project backlog.</p>
-<h3 id="host-based-docker">Host based Docker</h3>
-<p>The playground provides docker compose files to deploy the playground using docker images. The deployment contains three main services, for Apache IoTDB, VISSR and Redis.</p>
-<p>Please see the playground docker readme.md in the source tree for details.</p>
-<p>The service definitions are based on the upstream compose files from the IoTDB and VISSR projects.</p>
-<h3 id="automotive-hardware">Automotive hardware</h3>
-<p>The project will provide information as hardware deployment progresses.</p>
+<h2 id="introduction">Introduction</h2>
+<p>The playground uses the <a href="https://github.com/COVESA/vissr">VISSR</a> project to provide its northbound VISS support, along with the other features it provides.</p>
+<p>The VISSR project <a href="https://covesa.github.io/vissr/">documentation site</a> has extensive documentation on the VISSR components. So as the project progresses we will add information below focused on topics specific to the playground.</p>
+<h2 id="apache-iotdb-connector">Apache IoTDB connector</h2>
+<p>Please see the <a href="/cdsp/manuals/apache-iotdb/" title="Apache IoTDB Guide">IoTDB guide</a> for details of the connector between VISSR and IoTDB.</p>
 
 
 <footer class="footline">
@@ -514,93 +448,8 @@ The playground has included VISSR to provide its northbound VISS support.</p>
             
                 
                     
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-                        
-            
-            
-                
-                    
                         
                         
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-                        
-            
-            
-                
-                    
-                        
-                        
-                    
-                
-                
-
-                    
-                    
-                    
-
-                    
-            
-        
-                    
-            
-        
-                    
-                        
-            
-            
-                
                     
                 
                 
@@ -642,6 +491,19 @@ The playground has included VISSR to provide its northbound VISS support.</p>
             
         
                     
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
             
         
                     
@@ -649,6 +511,81 @@ The playground has included VISSR to provide its northbound VISS support.</p>
             
             
                 
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
                     
                 
                 
@@ -670,10 +607,10 @@ The playground has included VISSR to provide its northbound VISS support.</p>
 	 
 	 
 		
-			<a class="nav nav-prev" href="/cdsp/overview/cdsp-logical-concept/" title="Playground logical concept"> <i class="fa fa-chevron-left"></i></a>
+			<a class="nav nav-prev" href="/cdsp/manuals/apache-iotdb/" title="Apache IoTDB"> <i class="fa fa-chevron-left"></i></a>
 		
 		
-			<a class="nav nav-next" href="/cdsp/overview/covesa-and-beyond/" title="Combining with wider eco-system" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+			<a class="nav nav-next" href="/cdsp/examples/" title="Playground examples" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
 		
 	
     </div>
