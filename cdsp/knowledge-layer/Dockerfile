@@ -1,4 +1,4 @@
-FROM ubuntu:24.10 AS builder
+FROM ubuntu:25.10 AS builder
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
   build-essential \
@@ -7,6 +7,9 @@ RUN apt-get -y update && apt-get install -y --no-install-recommends \
   ca-certificates \
   git \
   wget
+
+COPY Netskope_rootcaCert.pem /usr/local/share/ca-certificates/Netskope_rootcaCert.crt
+RUN update-ca-certificates --verbose
 
 RUN wget https://archives.boost.io/release/1.87.0/source/boost_1_87_0.tar.gz \
   && tar xzf boost_1_87_0.tar.gz \
