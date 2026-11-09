@@ -89,63 +89,6 @@ workspace "CDSP Knowledge, Information and Graph Retrieval Architecture" "Conver
         cdsp.remotiveLabsBridge -> remotiveLabsPlatform "Subscribes to signals" "Remotive API"
         remotiveLabsPlatform -> cdsp.remotiveLabsBridge "Sends signal data timeseries" "Remotive API"
         cdsp.remotiveLabsBridge -> cdsp.timeseriesDataServer "Writes timeseries data stream" "IoTDB API/SQL"
-
-
-
-/* Connections created by AI for reference
-        cdsp.informationLayerServer.dbRouter -> cdsp.informationLayerServer.iotdbHandler "(De-)Auth / Read / Write / Subscribe" "Service Call"
-        cdsp.informationLayerServer.iotdbHandler -> cdsp.timeseriesDataServer "Read / Write / (Subscribe)" "Thrift"
-
-        cdsp.knowledgeLayerServer.connector -> cdsp.graphRetrievalMcpServer.knowledgeGraphAdapter "SPARQL QUERIES" "HTTP SPARQL"
-        cdsp.informationLayerServer.dbRouter -> cdsp.graphRetrievalMcpServer.informationLayerAdapter "Live and historical data" "Websocket API"
-
-        knowledgeEngineer -> cdsp.knowledgeLayerServer.reasonerAdaptor "Initialize with ontologies and rules (representing business logic) and update" "HTTP"
-        knowledgeEngineer -> cdsp.informationLayerServer.dbRouter "Provides semantic context for later conversion" "e.g. SHACL"
-
-        cdsp.remotiveLabsBridge -> remotiveLabsPlatform "Subscribes to signals" "Remotive API"
-        remotiveLabsPlatform -> cdsp.remotiveLabsBridge "Sends signal data timeseries" "Remotive API"
-        cdsp.remotiveLabsBridge -> cdsp.timeseriesDataServer "Writes timeseries data stream" "IoTDB API/SQL"
-
-        cdsp.graphRetrievalMcpServer.vectorStoreAdapter -> cdsp.graphRetrievalMcpServer.sharedServices "Semantic Node Search" "in-process"
-        cdsp.graphRetrievalMcpServer.knowledgeGraphAdapter -> cdsp.graphRetrievalMcpServer.sharedServices "Graph Queries and Traversal" "in-process"
-        cdsp.graphRetrievalMcpServer.sharedServices -> cdsp.graphRetrievalMcpServer.strategyLayer "Delegates Retrieval Operations" "in-process"
-        cdsp.graphRetrievalMcpServer.strategyLayer -> cdsp.graphRetrievalMcpServer.mcpTransport "Dispatches to selected strategy" "in-process"
-        cdsp.vectorStorageServer -> cdsp.graphRetrievalMcpServer.vectorStoreAdapter "Embedding Search" "HTTP REST"
-        cdsp.graphRetrievalMcpServer.informationLayerAdapter -> cdsp.graphRetrievalMcpServer.sharedServices "Live Data and Timeseries" "in-process"
-        cdsp.graphRetrievalMcpServer.mcpTransport -> aiAgents "Invokes Graph Retrieval Tool" "MCP Streamable HTTP"
-
-        // Relationships reconstructed from geometry-only connectors in the draw.io XML
-        onboardOffboardApplications -> cdsp.knowledgeLayerServer.connector "Contributing Information" "Websocket API" {
-            tags "Reconstructed"
-        }
-        onboardOffboardApplications -> cdsp.knowledgeLayerServer.connector "Consuming Knowledge" "HTTP SPARQL" {
-            tags "Reconstructed"
-        }
-        cdsp.informationLayerServer.dbRouter -> cdsp.knowledgeLayerServer.connector "Provides Information" "Websocket API" {
-            tags "Reconstructed"
-        }
-        cdsp.knowledgeLayerServer.connector -> cdsp.informationLayerServer.dbRouter "Returns new Information" "Websocket API" {
-            tags "Reconstructed"
-        }
-        cdsp.knowledgeLayerServer.connector -> cdsp.knowledgeLayerServer.convertor "Sends tree-like data (json)" "HTTP" {
-            tags "Reconstructed"
-        }
-        cdsp.knowledgeLayerServer.convertor -> cdsp.knowledgeLayerServer.connector "Sends Graph data (RDF)" "HTTP" {
-            tags "Reconstructed"
-        }
-        cdsp.knowledgeLayerServer.connector -> cdsp.knowledgeLayerServer.reasonerAdaptor "Trigger Graph database interactions (ontologies, triples, rules)" "HTTP" {
-            tags "Reconstructed"
-        }
-        cdsp.knowledgeLayerServer.reasonerAdaptor -> cdsp.knowledgeLayerServer.connector "Inference result (rules)" "HTTP" {
-            tags "Reconstructed"
-        }
-        cdsp.knowledgeLayerServer.reasonerAdaptor -> cdsp.knowledgeLayerServer.connector "Inference result (query)" "HTTP" {
-            tags "Reconstructed"
-        }
-        cdsp.remotiveLabsBridge -> cdsp.informationLayerServer.dbRouter "Writes current value of data stream" "Websocket API" {
-            tags "Reconstructed"
-        }
-*/
     }
 
     views {
@@ -166,14 +109,6 @@ workspace "CDSP Knowledge, Information and Graph Retrieval Architecture" "Conver
         component cdsp.informationLayerServer "IL-Components" {
             description "The component diagram for the Information Layer Container"
             include *
-/*
-            include cdsp.timeseriesDataServer
-            include cdsp.knowledgeLayerServer.connector
-            include cdsp.graphRetrievalMcpServer.informationLayerAdapter
-            include onboardOffboardApplications
-            include knowledgeEngineer
-            include cdsp.remotiveLabsBridge
-*/            
             autolayout lr
 #            title "CDSP Information Layer Server Components"
         }
@@ -182,12 +117,6 @@ workspace "CDSP Knowledge, Information and Graph Retrieval Architecture" "Conver
             description "The component diagram for the Knowledge Layer Container"
 
             include *
-/*
-            include cdsp.informationLayerServer.dbRouter
-            include cdsp.graphRetrievalMcpServer.knowledgeGraphAdapter
-            include onboardOffboardApplications
-            include knowledgeEngineer
-*/
             autolayout lr
 #            title "CDSP Knowledge Layer Server Components"
         }
@@ -196,13 +125,6 @@ workspace "CDSP Knowledge, Information and Graph Retrieval Architecture" "Conver
             description "The component diagram for the Graph Retrieval MCP Server"
 
             include *
-/*            
-            include aiAgents
-            include cdsp.vectorStorageServer
-            include cdsp.knowledgeLayerServer.connector
-            include cdsp.informationLayerServer.dbRouter
-            autolayout tb
-*/
             autolayout lr
 #            title "Graph Retrieval MCP Server Components"
         }
