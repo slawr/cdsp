@@ -17,7 +17,7 @@ workspace "COVESA Central Data Service Playground (CDSP)" "C4 model diagrams for
             tags "External Software System"
         }
 
-        cdsp = softwareSystem "COVESA Central Data Service Playground (CDSP)" "Central data service playground providing information, knowledge, graph retrieval and supporting data services." {
+        cdsp = softwareSystem "Central Data Service Playground (CDSP)" "Central data service playground providing information, knowledge, graph retrieval and supporting data services." {
 
             informationLayerServer = container "CDSP Information Layer Server" "Provides access to information-layer data and abstracts the underlying time-series data store." "Node.js" {
                 dbRouter = component "DB Router" "Provides information layer data in tree-like format. Abstracts data store details" "Node.JS Websocket Server"
@@ -35,7 +35,7 @@ workspace "COVESA Central Data Service Playground (CDSP)" "C4 model diagrams for
                 rdfReasoner = component "RDF Reasoner Service and Knowledge Graph" "Stores RDF data, executes rules, and evaluates queries." "RDFox or RDF4J"
             }
 
-            graphRetrievalMcpServer = container "(WIP) Graph Retrieval MCP Server" "Provides graph retrieval strategies to AI agents through MCP." "TypeScript" {
+            graphRetrievalMcpServer = container "(WIP) CDSP Graph Retrieval MCP Server" "Provides graph retrieval strategies to AI agents through MCP." "TypeScript" {
                 mcpTransport = component "MCP Transport" "Exposes all strategies as MCP tools. Handles Session and Auth" "Streamable HTTP"
                 strategyLayer = component "Strategy Layer" "seed_expand, local_fanout, path_find, timeseries_aware + extensible" "TypeScript"
                 sharedServices = component "Shared Services" "Semantic Search, Graph Traversal, Live Data, Temporal Analysis" "TypeScript"
