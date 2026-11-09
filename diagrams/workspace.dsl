@@ -1,4 +1,4 @@
-workspace "CDSP Knowledge, Information and Graph Retrieval Architecture" "Converted from CDSP-C4-Model-Graph-Retrieval-Server-Component-diagram.drawio.xml (diagram v0.4)" {
+workspace "COVESA Central Data Service Playground (CDSP)" "C4 model diagrams for the COVESA Central Data Service Playground (CDSP) architecture" {
 
     !identifiers hierarchical
 
@@ -58,6 +58,7 @@ workspace "CDSP Knowledge, Information and Graph Retrieval Architecture" "Conver
         cdsp.informationLayerServer.iotdbHandler -> cdsp.timeseriesDataServer "Read / Write / (Subscribe)" "Node.js client"
         knowledgeEngineer -> cdsp.informationLayerServer.dbRouter "Provides semantic context for later conversion" "e.g. SHACL"
         cdsp.remotiveLabsBridge -> cdsp.informationLayerServer.dbRouter "Writes current value of data stream" "Websocket API"
+        cdsp.informationLayerServer.dbRouter -> cdsp.knowledgeLayerServer.connector "Provides Information" "Websocket API"
 
         // Knowledge Layer relationships
         cdsp.knowledgeLayerServer.reasonerAdaptor -> cdsp.knowledgeLayerServer.rdfReasoner "Send triples, rules, queries" "HTTP"
@@ -73,6 +74,8 @@ workspace "CDSP Knowledge, Information and Graph Retrieval Architecture" "Conver
         cdsp.knowledgeLayerServer.convertor -> cdsp.knowledgeLayerServer.connector "Sends tree-like data (json)" "HTTP"
         cdsp.knowledgeLayerServer.connector -> cdsp.knowledgeLayerServer.convertor "Sends Graph data (RDF)" "HTTP"
 
+        cdsp.knowledgeLayerServer.connector -> cdsp.informationLayerServer.dbRouter "Returns new Information" "Websocket API"
+
         onboardOffboardApplications -> cdsp.knowledgeLayerServer.connector "Consuming Knowledge" "HTTP SPARQL"
 
         // Graph RAG Server
@@ -84,6 +87,7 @@ workspace "CDSP Knowledge, Information and Graph Retrieval Architecture" "Conver
         cdsp.vectorStorageServer -> cdsp.graphRetrievalMcpServer.vectorStoreAdapter "Embedding Search" "HTTP REST"
         cdsp.graphRetrievalMcpServer.sharedServices -> cdsp.graphRetrievalMcpServer.informationLayerAdapter "Live Data and Timeseries" "in-process"
         cdsp.graphRetrievalMcpServer.informationLayerAdapter -> cdsp.informationLayerServer.dbRouter "Live and historical data" "Websocket API"
+        cdsp.graphRetrievalMcpServer.knowledgeGraphAdapter -> cdsp.knowledgeLayerServer.connector "SPARQL QUERIES" "HTTP SPARQL"
 
         // RemotiveLabs
         cdsp.remotiveLabsBridge -> remotiveLabsPlatform "Subscribes to signals" "Remotive API"
