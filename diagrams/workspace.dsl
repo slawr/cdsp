@@ -49,6 +49,10 @@ workspace "COVESA Central Data Service Playground (CDSP)" "C4 model diagrams for
             }
 
             remotiveLabsBridge = container "RemotiveLabs Bridge" "Streams subscribed timeseries data from RemotiveLabs virtual signal platform to Playground data store" "Python"
+
+            vissServer = container "VISS Server" "Serves VSS data via the VISS AP" "VISSR" {
+                -> cdsp.timeseriesDataServer "Sends VSS get/set requests to" "IoTDB API/SQL"
+            }
         }
 
         // Information Layer relationships
@@ -75,10 +79,9 @@ workspace "COVESA Central Data Service Playground (CDSP)" "C4 model diagrams for
         cdsp.knowledgeLayerServer.connector -> cdsp.knowledgeLayerServer.convertor "Sends Graph data (RDF)" "HTTP"
 
         cdsp.knowledgeLayerServer.connector -> cdsp.informationLayerServer.dbRouter "Returns new Information" "Websocket API"
+        cdsp.knowledgeLayerServer.connector -> onboardOffboardApplications "Consuming Knowledge" "HTTP SPARQL"
 
-        onboardOffboardApplications -> cdsp.knowledgeLayerServer.connector "Consuming Knowledge" "HTTP SPARQL"
-
-        // Graph RAG Server
+        // Graph RAG Server relationships
         aiAgents -> cdsp.graphRetrievalMcpServer.mcpTransport "Invokes Graph Retrieval Tool" "MCP Streamable HTTP"
         cdsp.graphRetrievalMcpServer.mcpTransport -> cdsp.graphRetrievalMcpServer.strategyLayer "Dispatches to selected strategy" "in-process"
         cdsp.graphRetrievalMcpServer.strategyLayer -> cdsp.graphRetrievalMcpServer.sharedServices "Delegates Retrieval Operations" "in-process"
@@ -89,7 +92,7 @@ workspace "COVESA Central Data Service Playground (CDSP)" "C4 model diagrams for
         cdsp.graphRetrievalMcpServer.informationLayerAdapter -> cdsp.informationLayerServer.dbRouter "Live and historical data" "Websocket API"
         cdsp.graphRetrievalMcpServer.knowledgeGraphAdapter -> cdsp.knowledgeLayerServer.connector "SPARQL QUERIES" "HTTP SPARQL"
 
-        // RemotiveLabs
+        // RemotiveLabs relationships
         cdsp.remotiveLabsBridge -> remotiveLabsPlatform "Subscribes to signals" "Remotive API"
         remotiveLabsPlatform -> cdsp.remotiveLabsBridge "Sends signal data timeseries" "Remotive API"
         cdsp.remotiveLabsBridge -> cdsp.timeseriesDataServer "Writes timeseries data stream" "IoTDB API/SQL"
@@ -113,6 +116,7 @@ workspace "COVESA Central Data Service Playground (CDSP)" "C4 model diagrams for
         component cdsp.informationLayerServer "IL-Components" {
             description "The component diagram for the Information Layer Container"
             include *
+#            exclude "cdsp.remotiveLabsBridge -> cdsp.timeseriesDataServer"
             autolayout lr
 #            title "CDSP Information Layer Server Components"
         }
@@ -121,7 +125,7 @@ workspace "COVESA Central Data Service Playground (CDSP)" "C4 model diagrams for
             description "The component diagram for the Knowledge Layer Container"
 
             include *
-            autolayout lr
+#            autolayout lr
 #            title "CDSP Knowledge Layer Server Components"
         }
 
