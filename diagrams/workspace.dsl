@@ -22,6 +22,8 @@ workspace "COVESA Central Data Service Playground (CDSP)" "C4 model diagrams for
             informationLayerServer = container "CDSP Information Layer Server" "Provides access to information-layer data and abstracts the underlying time-series data store." "Node.js" {
                 dbRouter = component "DB Router" "Provides information layer data in tree-like format. Abstracts data store details" "Node.JS Websocket Server"
                 iotdbHandler = component "IotDB Handler" "Provides information layer data in tree-like format. Abstracts data store details" "Node.JS Websocket Server"
+
+                dbRouter -> iotdbHandler "(De-)Auth / Read / Write / Subscribe" "Service Call"
             }
 
             timeseriesDataServer = container "Timeseries Data Server" "Serves timeseries data in VSS and other data-models" "Apache IoTDB" {
@@ -33,6 +35,20 @@ workspace "COVESA Central Data Service Playground (CDSP)" "C4 model diagrams for
                 connector = component "Connector" "Connects Knowledge Layer to Information Layer and manage data tasks within KL" "Websocket Client"
                 reasonerAdaptor = component "Reasoner-Adaptor" "Interacts with Graph database and reasoner by API (e.g. allows import of RDF data and rules and execute queries)" "C++"
                 rdfReasoner = component "RDF Reasoner Service and Knowledge Graph" "Stores RDF data, executes rules, and evaluates queries." "RDFox or RDF4J"
+
+                reasonerAdaptor -> rdfReasoner "Send triples, rules, queries" "HTTP"
+                reasonerAdaptor -> rdfReasoner "Subscribes to new inferred triples" "HTTP"
+                reasonerAdaptor -> connector "Inference result (rules)" "HTTP"
+                reasonerAdaptor -> connector "Inference result (query)" "HTTP"
+                connector -> reasonerAdaptor "Trigger Graph database interactions (ontologies, triples, rules)" "HTTP"
+                connector -> convertor "Sends tree-like data (json)" "HTTP"
+                convertor -> connector "Sends Graph data (RDF)" "HTTP"
+                convertor -> connector "Sends tree-like data (json)" "HTTP"
+                connector -> convertor "Sends Graph data (RDF)" "HTTP"
+            }
+
+            vectorStorageServer = container "Vector Storage Server" "Ontology Node Embeddings" "e.g. Chroma" {
+                tags "Database"
             }
 
             graphRetrievalMcpServer = container "(WIP) CDSP Graph Retrieval MCP Server" "Provides graph retrieval strategies to AI agents through MCP." "TypeScript" {
@@ -42,19 +58,45 @@ workspace "COVESA Central Data Service Playground (CDSP)" "C4 model diagrams for
                 knowledgeGraphAdapter = component "Knowledge Graph Adapter" "query (sparql), traverse (seeds), pathFind(from, to), describe(iri)" "Interface"
                 vectorStoreAdapter = component "Vector Store Adapter" "search(query, n), filter(query, metadata)" "Interface"
                 informationLayerAdapter = component "Information Layer Adapter" "get(path, instance), subscribe(path), timeseries(path, range)" "Interface"
+
+                mcpTransport -> strategyLayer "Dispatches to selected strategy" "in-process"
+                strategyLayer -> sharedServices "Delegates Retrieval Operations" "in-process"
+                sharedServices -> vectorStoreAdapter "Semantic Node Search" "in-process"
+                sharedServices -> knowledgeGraphAdapter "Graph Queries and Traversal" "in-process"
+                sharedServices -> informationLayerAdapter "Live Data and Timeseries" "in-process"
             }
 
-            vectorStorageServer = container "Vector Storage Server" "Ontology Node Embeddings" "e.g. Chroma" {
-                tags "Database"
+            remotiveLabsBridge = container "RemotiveLabs Bridge" "Streams subscribed timeseries data from RemotiveLabs virtual signal platform to Playground data store" "Python" {
+                -> remotiveLabsPlatform "Subscribes to signals" "Remotive API"
+                remotiveLabsPlatform -> cdsp.remotiveLabsBridge "Sends signal data timeseries" "Remotive API"
+                -> cdsp.timeseriesDataServer "Writes timeseries data stream" "IoTDB API/SQL"                
             }
-
-            remotiveLabsBridge = container "RemotiveLabs Bridge" "Streams subscribed timeseries data from RemotiveLabs virtual signal platform to Playground data store" "Python"
 
             vissServer = container "VISS Server" "Serves VSS data via the VISS AP" "VISSR" {
                 -> cdsp.timeseriesDataServer "Sends VSS get/set requests to" "IoTDB API/SQL"
             }
+
+            // Information Layer external relationships
+            informationLayerServer.dbRouter -> onboardOffboardApplications "Consuming Information" "Websocket API"
+            onboardOffboardApplications -> cdsp.informationLayerServer.dbRouter "Contributing Information" "Websocket API"
+            informationLayerServer.iotdbHandler -> timeseriesDataServer "Read / Write / (Subscribe)" "Node.js client"
+            informationLayerServer.dbRouter -> knowledgeLayerServer.connector "Provides Information" "Websocket API"
+            knowledgeEngineer -> cdsp.informationLayerServer.dbRouter "Provides semantic context for later conversion" "e.g. SHACL"
+            cdsp.remotiveLabsBridge -> cdsp.informationLayerServer.dbRouter "Writes current value of data stream" "Websocket API"
+
+            // Knowledge Layer external relationships
+            knowledgeLayerServer.connector -> onboardOffboardApplications "Consuming Knowledge" "HTTP SPARQL"
+            knowledgeLayerServer.connector -> cdsp.informationLayerServer.dbRouter "Returns new Information" "Websocket API"
+            knowledgeEngineer -> cdsp.knowledgeLayerServer.reasonerAdaptor "Initialize with ontologies and rules (representing business logic) and update" "HTTP"
+
+            // Graph RAG Server external relationships
+            aiAgents -> graphRetrievalMcpServer.mcpTransport "Invokes Graph Retrieval Tool" "MCP Streamable HTTP"
+            graphRetrievalMcpServer.informationLayerAdapter -> cdsp.informationLayerServer.dbRouter "Live and historical data" "Websocket API"
+            graphRetrievalMcpServer.knowledgeGraphAdapter -> cdsp.knowledgeLayerServer.connector "SPARQL QUERIES" "HTTP SPARQL"
+            vectorStorageServer -> graphRetrievalMcpServer.vectorStoreAdapter "Embedding Search" "HTTP REST"
         }
 
+/*
         // Information Layer relationships
         cdsp.informationLayerServer.dbRouter -> onboardOffboardApplications "Consuming Information" "Websocket API"
         onboardOffboardApplications -> cdsp.informationLayerServer.dbRouter "Contributing Information" "Websocket API"
@@ -80,8 +122,9 @@ workspace "COVESA Central Data Service Playground (CDSP)" "C4 model diagrams for
 
         cdsp.knowledgeLayerServer.connector -> cdsp.informationLayerServer.dbRouter "Returns new Information" "Websocket API"
         cdsp.knowledgeLayerServer.connector -> onboardOffboardApplications "Consuming Knowledge" "HTTP SPARQL"
-
+*/
         // Graph RAG Server relationships
+/*        
         aiAgents -> cdsp.graphRetrievalMcpServer.mcpTransport "Invokes Graph Retrieval Tool" "MCP Streamable HTTP"
         cdsp.graphRetrievalMcpServer.mcpTransport -> cdsp.graphRetrievalMcpServer.strategyLayer "Dispatches to selected strategy" "in-process"
         cdsp.graphRetrievalMcpServer.strategyLayer -> cdsp.graphRetrievalMcpServer.sharedServices "Delegates Retrieval Operations" "in-process"
@@ -96,6 +139,7 @@ workspace "COVESA Central Data Service Playground (CDSP)" "C4 model diagrams for
         cdsp.remotiveLabsBridge -> remotiveLabsPlatform "Subscribes to signals" "Remotive API"
         remotiveLabsPlatform -> cdsp.remotiveLabsBridge "Sends signal data timeseries" "Remotive API"
         cdsp.remotiveLabsBridge -> cdsp.timeseriesDataServer "Writes timeseries data stream" "IoTDB API/SQL"
+*/
     }
 
     views {
