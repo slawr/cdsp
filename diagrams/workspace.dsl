@@ -96,7 +96,50 @@ workspace "COVESA Central Data Service Playground (CDSP)" "C4 model diagrams for
             vectorStorageServer -> graphRetrievalMcpServer.vectorStoreAdapter "Embedding Search" "HTTP REST"
         }
 
-/*
+        cdspUser = person "CDSP user" "Developer or user of use-cases" {
+            -> cdsp "Creates or operates use-cases using"
+        }
+
+        southboundDataSources = softwareSystem "Southbound Data Sources" "e.g: real and virtual data feeder, simulator, gateway, ECUs" {
+            tags "External Software System"
+
+            -> cdsp "Sends timeseries data (VSS + other data models) to" "IoTDB API/SQL"
+            cdsp -> southboundDataSources "Subscribes to data from"
+        }
+
+        bigDataCloud = softwareSystem "Big data" "Big data systems in the cloud" {
+            tags "External Software System"
+
+            -> cdsp "Co-operates with" "data-centric"
+        }
+
+        largeECUs = softwareSystem "Large ECUs" "e.g. HPC, zone and domain controllers" {
+            tags "External Software System"
+
+            -> cdsp "Co-operates with" "data-centric"
+        }
+
+        useCaseClients = softwareSystem "Use-case Clients" "Clients defining and manipulating data, e.g. functions and tooling, for use-cases" {
+            tags "External Software System"
+
+            -> cdsp "Makes data requests to" "e.g. VISS API, Native API, DB query language"
+        }
+
+        dbClients = softwareSystem "DB Clients" "Clients defining and manipulating data, in the VSS data model and other data models, using the database" {
+            tags "External Software System"
+
+            -> cdsp.timeseriesDataServer "Sends Data Definition and Data Manipulation requests to" "IoTDB API/SQL"
+        }
+
+        vissClients = softwareSystem "VISS Clients" "Clients manipulating VSS data using the VISS API " {
+            tags "External Software System"
+
+            -> cdsp.vissServer "Makes VISS get/set/sub requests for VSS data from" "VISS API"
+        }
+
+/* Original 'long form' relationship definitions from before they were dispersed to the components using 'short form'. 
+   Left here temporarily for reference. Should be removed once new relationships agreed
+
         // Information Layer relationships
         cdsp.informationLayerServer.dbRouter -> onboardOffboardApplications "Consuming Information" "Websocket API"
         onboardOffboardApplications -> cdsp.informationLayerServer.dbRouter "Contributing Information" "Websocket API"
@@ -122,9 +165,8 @@ workspace "COVESA Central Data Service Playground (CDSP)" "C4 model diagrams for
 
         cdsp.knowledgeLayerServer.connector -> cdsp.informationLayerServer.dbRouter "Returns new Information" "Websocket API"
         cdsp.knowledgeLayerServer.connector -> onboardOffboardApplications "Consuming Knowledge" "HTTP SPARQL"
-*/
+
         // Graph RAG Server relationships
-/*        
         aiAgents -> cdsp.graphRetrievalMcpServer.mcpTransport "Invokes Graph Retrieval Tool" "MCP Streamable HTTP"
         cdsp.graphRetrievalMcpServer.mcpTransport -> cdsp.graphRetrievalMcpServer.strategyLayer "Dispatches to selected strategy" "in-process"
         cdsp.graphRetrievalMcpServer.strategyLayer -> cdsp.graphRetrievalMcpServer.sharedServices "Delegates Retrieval Operations" "in-process"
@@ -145,15 +187,16 @@ workspace "COVESA Central Data Service Playground (CDSP)" "C4 model diagrams for
     views {
         systemContext cdsp "CDSP-SystemContext" {
             include *
-            autolayout lr
-            title "CDSP System Context"
+            exclude knowledgeEngineer remotiveLabsPlatform dbClients vissClients onboardOffboardApplications aiAgents
+            autolayout tb
+#            title "CDSP System Context"
             description "CDSP and its users and external software systems."
         }
 
         container cdsp "CDSP-Containers" {
             include *
             autolayout lr
-            title "CDSP Container View"
+            #title "CDSP Container View"
             description "The principal CDSP servers, stores, bridge and external dependencies."
         }
 
@@ -169,7 +212,7 @@ workspace "COVESA Central Data Service Playground (CDSP)" "C4 model diagrams for
             description "The component diagram for the Knowledge Layer Container"
 
             include *
-#            autolayout lr
+            autolayout lr
 #            title "CDSP Knowledge Layer Server Components"
         }
 
